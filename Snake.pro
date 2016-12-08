@@ -11,7 +11,9 @@ TEMPLATE = app
 
 SOURCES += \
     source.cpp \
-    snake.cpp
+    snake.cpp \
+    gui.cpp
 
 HEADERS += \
-    snake.h
+    snake.h \
+    gui.h

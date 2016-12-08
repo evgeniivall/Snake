@@ -3,7 +3,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <thread>
-
+#include "gui.h"
 
 #define UP      'A'
 #define DOWN    'B'
@@ -22,11 +22,14 @@ void Game(Snake &s, direction &current, bool &game)
         if(current != enter)
         {
             s.Set_Direction(current);
-            s.ShowScore();
             s.Move();
-            s.Show_Snake();
-            s.Eat();
             s.Collision(game);
+            s.ShowScore();
+            if(!game)
+                s.Show_Snake();
+            s.Eat();
+
+
         }
         else
         {
@@ -55,7 +58,11 @@ void Control(direction &current, bool &game)
             previous = current;
             key = getchar();
         }
-
+        if(game)
+        {
+            std::cout.flush();
+            break;
+        }
 
         if((char)key == ENTER)
         {
@@ -66,13 +73,23 @@ void Control(direction &current, bool &game)
             continue;
         }
 
-
-
         if (key == ESC)
         {
+
+            if(game)
+            {
+                std::cout.flush();
+                break;
+            }
             key = getchar();
+
             if (key == '[')
             {
+                if(game)
+                {
+                    std::cout.flush();
+                    break;
+                }
                 key = getchar();
                 switch (key)
                 {
@@ -151,6 +168,12 @@ void StartGame(bool &gameEnd)
 }
 
 
+bool Menu()
+{
+    std::string options[2] = {"   New Game   ", "     Exit     "};
+    GUI G(2, options, "You are lose!",bg_emphasizing, red);
+    return G.Show();
+}
 
 int main()
 {
@@ -159,7 +182,7 @@ int main()
     while(!gameEnd)
     {
         StartGame(gameEnd);
-        gameEnd = true; //Menu function
+        gameEnd = Menu(); //Menu function
     }
     std::cout << "End";
 

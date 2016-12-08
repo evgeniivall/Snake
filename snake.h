@@ -1,30 +1,13 @@
 #ifndef SNAKE_H
 #define SNAKE_H
 
-
+void SetCursorPos(int XPos, int YPos);
 
 enum direction {right, left, up, down, enter};
 
 class Snake
 {
-public:
-    Snake();
-    void Show_Snake();
-    void Set_Direction(direction d);
-    void positionSwap();
-    void Eat();
-    void GenerateFood();
-    void Borders_Draw();
-    void Collision(bool &b);
-    void ShowScore();
-    void Game_End();
-    void showFood();
-    void Move();
-    void Pause();
 
-    void Resize();
-    ~Snake();
-    bool loos_;
 
 private:
     struct Point_
@@ -44,12 +27,31 @@ private:
     Point_ min_;
     Point_ food_;
 
-    void SetCursorPos(Point_ p);
-    void SetCursorPos(int XPos, int YPos);
+
 
     unsigned lenght_;
     direction currentDirection_;
     int score_;
+public:
+    Snake();
+    void Show_Snake();
+    void Set_Direction(direction d);
+    void positionSwap();
+    void Eat();
+    void GenerateFood();
+    void Borders_Draw();
+    void Collision(bool &b);
+    void ShowScore();
+    void Game_End();
+    void showFood();
+    void Move();
+    void Pause();
+
+    friend void SetCursorPos(Point_ p);
+
+    void Resize();
+    ~Snake();
+    bool loos_;
 };
 
 #endif // SNAKE_H

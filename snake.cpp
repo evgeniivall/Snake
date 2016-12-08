@@ -6,6 +6,16 @@
 
 #define head 0
 
+void SetCursorPos(Snake::Point_ p)
+{
+    std::cout.flush();
+    printf("\033[%d;%dH", p.y_ + 1, p.x_ + 1);
+}
+void SetCursorPos(int XPos, int YPos)
+{
+    std::cout.flush();
+    printf("\033[%d;%dH", YPos + 1, XPos + 1);
+}
 
 
 void Snake::Set_Direction(direction d)
@@ -41,16 +51,6 @@ std::string output(std::string text, int type, int color, int bg)
 }
 
 
-void Snake::SetCursorPos(Point_ p)
-{
-    std::cout.flush();
-    printf("\033[%d;%dH", p.y_ + 1, p.x_ + 1);
-}
-void Snake::SetCursorPos(int XPos, int YPos)
-{
-    std::cout.flush();
-    printf("\033[%d;%dH", YPos + 1, XPos + 1);
-}
 
 Snake::Snake() : max_({38, 19}), min_({0, 1})
 {
@@ -61,7 +61,7 @@ Snake::Snake() : max_({38, 19}), min_({0, 1})
     //min_.x_ = 0;
     //min_.y_ = 1;
 
-    lenght_ = 2;
+    lenght_ = 10;
     score_ = 0;
     currentDirection_ = right;
     loos_ = false;
@@ -110,10 +110,12 @@ void Snake::Resize()
 void Snake::Borders_Draw()
 {
     SetCursorPos(0,0);
+    //
     for(int j = min_.x_; j < max_.x_ + 2; j++)
     {
        std::cout << output(" ", 0, 0, 44);
     }
+    //
     std::cout << std::endl;
     for(int i = min_.y_; i < max_.y_+ 1; i++)
     {
@@ -152,14 +154,6 @@ void Snake::Collision(bool &b)
             b = true;
             for(int t = 0; t < 5; t++)
             {
-                for(unsigned i = 0; i < lenght_ + 1; i++)
-                {
-                    SetCursorPos(snake_[i]);
-                    std::cout << output("  ", 0, 0, 46 );
-                }
-                std::cout.flush();
-                usleep(100000);
-
                 for(unsigned i = 1; i < lenght_ + 1; i++)
                 {
                     SetCursorPos(snake_[i]);
@@ -169,7 +163,20 @@ void Snake::Collision(bool &b)
                 std::cout << output("  ", 0, 0, 40 );
                 std::cout.flush();
                 usleep(100000);
+
+                for(unsigned i = 0; i < lenght_ + 1; i++)
+                {
+                    SetCursorPos(snake_[i]);
+                    std::cout << output("  ", 0, 0, 46 );
+                }
+                std::cout.flush();
+                usleep(100000);
+
+
             }
+            SetCursorPos(food_);
+            std::cout << output("  ", 0, 0, 46 );
+
 
         }
     }
