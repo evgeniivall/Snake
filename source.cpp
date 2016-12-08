@@ -1,17 +1,8 @@
-#include <iostream>
 #include "snake.h"
-#include <termios.h>
-#include <unistd.h>
-#include <thread>
+
 #include "gui.h"
 
-#define UP      'A'
-#define DOWN    'B'
-#define RIGHT   'C'
-#define LEFT    'D'
-#define ENTER   '\n'
 
-#define ESC 27
 
 
 void Game(Snake &s, direction &current, bool &game)
@@ -26,8 +17,10 @@ void Game(Snake &s, direction &current, bool &game)
             s.Collision(game);
             s.ShowScore();
             if(!game)
+            {
                 s.Show_Snake();
             s.Eat();
+            }
 
 
         }
@@ -38,6 +31,14 @@ void Game(Snake &s, direction &current, bool &game)
     }
 
 }
+#ifdef __unix__
+
+#define UP      'A'
+#define DOWN    'B'
+#define RIGHT   'C'
+#define LEFT    'D'
+#define ENTER   '\n'
+#define ESC      27
 
 void Control(direction &current, bool &game)
 {
@@ -58,11 +59,11 @@ void Control(direction &current, bool &game)
             previous = current;
             key = getchar();
         }
-        if(game)
-        {
-            std::cout.flush();
-            break;
-        }
+        //if(game)
+        //{
+        //    tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+        //    return;
+        //}
 
         if((char)key == ENTER)
         {
@@ -76,20 +77,20 @@ void Control(direction &current, bool &game)
         if (key == ESC)
         {
 
-            if(game)
-            {
-                std::cout.flush();
-                break;
-            }
+            //if(game)
+            //{
+            //    tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+            //    return;
+            //}
             key = getchar();
 
             if (key == '[')
             {
-                if(game)
-                {
-                    std::cout.flush();
-                    break;
-                }
+          //      if(game)
+            //    {
+              //      tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+                //    return;
+                //}
                 key = getchar();
                 switch (key)
                 {
@@ -154,7 +155,78 @@ void Control(direction &current, bool &game)
     }
     tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
 }
+#endif
 
+#ifdef _WIN32
+
+#define UP      72
+#define DOWN    80
+#define RIGHT   77
+#define LEFT    75
+#define ENTER   13
+
+void Control(direction &current, bool &game)
+{
+    bool pause = false;
+    int key;
+    while(!game)
+    {
+        if(!pause)
+        {
+            previous = current;
+            key = getchar();
+        }
+            switch (key)
+            {
+                case ENTER:
+                {
+                    pause = true;
+                    current = enter;
+                    key = getchar();
+                    continue;
+                }
+                case UP:
+                {
+                    if(!(previous == down))
+                    {
+                        current = up;
+                        pause = false;
+                    }
+                    break;
+                }
+                case DOWN:
+                {
+                    if(!(previous == up))
+                    {
+                        current = down;
+                        pause = false;
+                    }
+                    break;
+                }
+                case LEFT:
+                {
+                    if(!(previous == right))
+                    {
+                        current = left;
+                        pause = false;
+                    }
+                    break;
+                }
+                case RIGHT:
+                {
+                    if(!(previous == left))
+                    {
+                        current = right;
+                        pause = false;
+                    }
+                    break;
+                }
+           }
+          usleep(100000);
+    }
+}
+
+#endif
 void StartGame(bool &gameEnd)
 {
     Snake a;

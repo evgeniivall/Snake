@@ -1,7 +1,13 @@
 #ifndef SNAKE_H
 #define SNAKE_H
 
-void SetCursorPos(int XPos, int YPos);
+#include <unistd.h>
+#include <iostream>
+#include <math.h>
+#include <thread>
+#include <time.h>
+
+
 
 enum direction {right, left, up, down, enter};
 
@@ -27,7 +33,11 @@ private:
     Point_ min_;
     Point_ food_;
 
-
+    int bgColor_;
+    int snakeColor_;
+    int headColor_;
+    int panelColor_;
+    int foodColor_;
 
     unsigned lenght_;
     direction currentDirection_;
@@ -54,4 +64,11 @@ public:
     bool loos_;
 };
 
+
+
+void SetCursorPos(int XPos, int YPos);
+void SetCursorPos(Snake::Point_ p);
+
 #endif // SNAKE_H
+
+

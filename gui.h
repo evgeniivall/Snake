@@ -1,8 +1,23 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include <iostream>
 
+
+#include <iostream>
+#define TAB "\t"
+
+#ifdef _WIN32
+#include <conio.h>
+#define cls() system("cls")
+#endif
+
+#ifdef __unix__
+#include <termios.h>
+#include <unistd.h>
+#define cls() system("clear")
+#endif
+
+std::string ColoredOut(std::string text, int type, int color, int bg);
 
 enum color
 {
@@ -28,7 +43,7 @@ public:
     int Show();
     GUI();
     GUI(int size, std::string* names, std::string head, emphasizing_mode mode, color emp_color);
-    std::string ColoredOut(std::string text, int type, int color, int bg);
+    //std::string ColoredOut(std::string text, int type, int color, int bg);
 
     ~GUI()
     {

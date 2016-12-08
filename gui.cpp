@@ -1,18 +1,5 @@
 #include "gui.h"
-#include <iostream>
 #include "snake.h"
-#define TAB "\t"
-
-#ifdef _WIN32
-#include <conio.h>
-#define cls() system("cls")
-#endif
-
-#ifdef __unix__
-#include <termios.h>
-#include <unistd.h>
-#define cls() system("clear")
-#endif
 
 GUI::GUI(int size, std::string* names, std::string head, emphasizing_mode mode, color emp_color)
 {
@@ -28,48 +15,21 @@ GUI::GUI(int size, std::string* names, std::string head, emphasizing_mode mode, 
 
     enter_ = false;
 }
-void GUI::Set_Mode(emphasizing_mode inputMode, color col)
+
+void GUI::Set_Mode(emphasizing_mode inputMode, color setColor)
 {
     if(inputMode == bg_emphasizing)
     {
-        bgColor_ = col + 10;
+        bgColor_ = setColor;
         textColor_ = 0;
     }
     else
     {
-        textColor_ = col;
+        textColor_ = setColor;
         bgColor_ = 0;
     }
 }
 
-std::string GUI::ColoredOut(std::string text, int type, int color, int bg)
-{
-    bool flag = false;
-    std::string str = "\x1b[";
-    if(color != 0)
-    {
-        str += std::to_string(color);
-        flag = true;
-    }
-    if(type != 0)
-    {
-        if(flag)
-            str += ";";
-        str += std::to_string(type);
-        flag = true;
-    }
-    if(bg != 0)
-    {
-        if(flag)
-            str += ";";
-        str += std::to_string(bg);
-    }
-    str = str + "m" + text + "\x1b[0m";
-
-    return str;
-}
-
-//void GUI::Show()
 int GUI::Show()
 {
     Display();
@@ -78,11 +38,10 @@ int GUI::Show()
 
 void GUI::Display()
 {
-    //cls();
     if(enter_)
         return;
     SetCursorPos(13, 5);
-    std::cout  << ColoredOut(Header_,1,white,46) << std::endl << std::endl;
+    std::cout  << ColoredOut(Header_, 1,white, light_blue) << std::endl << std::endl;
 
     for (int i = 0; i < optionsAmount_; i++)
     {
@@ -94,7 +53,7 @@ void GUI::Display()
         else
         {
             SetCursorPos(12, (7 + i));
-            std::cout  << ColoredOut(strArray_[i], 0, 0, 46);
+            std::cout  << ColoredOut(strArray_[i], 0, 0, light_blue);
         }
         std::cout << std::endl;
     }
@@ -103,10 +62,10 @@ void GUI::Display()
 
 }
 
+
+#ifdef __unix__
 void GUI::Navigator()
 {
-#ifdef __unix__
-
     struct termios oldt,
         newt;
     tcgetattr( STDIN_FILENO, &oldt );
@@ -146,9 +105,11 @@ void GUI::Navigator()
             }
         }
     }
+}
 #endif
 #ifdef _WIN32
-
+void GUI::Navigator()
+{
     int key = _getch();
 
         switch (key)
@@ -176,7 +137,7 @@ void GUI::Navigator()
             }
 
         }
-
-#endif
 }
+#endif
+
 

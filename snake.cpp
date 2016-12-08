@@ -1,8 +1,5 @@
 #include "snake.h"
-#include <iostream>
-#include <unistd.h>
-#include <math.h>
-#include <time.h>
+#include "gui.h"
 
 #define head 0
 
@@ -23,7 +20,7 @@ void Snake::Set_Direction(direction d)
     currentDirection_ = d;
 }
 
-std::string output(std::string text, int type, int color, int bg)
+std::string ColoredOut(std::string text, int type, int color, int bg)
 {
     bool par = 0;
     std::string str = "\x1b[";
@@ -41,6 +38,7 @@ std::string output(std::string text, int type, int color, int bg)
     }
     if(bg != 0)
     {
+        bg += 10;
         if(par != 0)
             str += ";";
         str += std::to_string(bg);
@@ -54,14 +52,7 @@ std::string output(std::string text, int type, int color, int bg)
 
 Snake::Snake() : max_({38, 19}), min_({0, 1})
 {
-    //max_ = {38, 19};
-    //max_.x_ = 38;
-    //max_.y_ = 19;
-    //min_ = {0, 1};
-    //min_.x_ = 0;
-    //min_.y_ = 1;
-
-    lenght_ = 10;
+    lenght_ = 18;
     score_ = 0;
     currentDirection_ = right;
     loos_ = false;
@@ -69,9 +60,7 @@ Snake::Snake() : max_({38, 19}), min_({0, 1})
     snake_ = new Point_[lenght_ + 1];
     for(unsigned i = 0; i < lenght_ + 1; i++)
     {
-        //snake_[i] = {0, 0};
-        snake_[i].x_ = 0;
-        snake_[i].y_ = 0;
+        snake_[i] = {0, 0};
     }
     srand(time(0));
     do
@@ -80,6 +69,12 @@ Snake::Snake() : max_({38, 19}), min_({0, 1})
         snake_[head].y_= rand() % max_.y_ + 1;
     }
     while(snake_[head].x_ % 2);
+
+    bgColor_    = light_blue;
+    snakeColor_ = white;
+    headColor_  = black;
+    panelColor_ = blue;
+    foodColor_  = red;
 
     GenerateFood();
 
@@ -113,7 +108,7 @@ void Snake::Borders_Draw()
     //
     for(int j = min_.x_; j < max_.x_ + 2; j++)
     {
-       std::cout << output(" ", 0, 0, 44);
+       std::cout << ColoredOut(" ", 0, 0, panelColor_);
     }
     //
     std::cout << std::endl;
@@ -121,7 +116,7 @@ void Snake::Borders_Draw()
     {
         for(int j = min_.x_; j < max_.x_ + 2; j++)
         {
-            std::cout << output(" ", 0, 0, 46 );
+            std::cout << ColoredOut(" ", 0, 0, bgColor_ );
         }
        std::cout << std::endl;
     }
@@ -157,17 +152,17 @@ void Snake::Collision(bool &b)
                 for(unsigned i = 1; i < lenght_ + 1; i++)
                 {
                     SetCursorPos(snake_[i]);
-                    std::cout << output("  ", 0, 0, 47 );
+                    std::cout << ColoredOut("  ", 0, 0, snakeColor_ );
                 }
                 SetCursorPos(snake_[head + 1]);
-                std::cout << output("  ", 0, 0, 40 );
+                std::cout << ColoredOut("  ", 0, 0, headColor_ );
                 std::cout.flush();
                 usleep(100000);
 
                 for(unsigned i = 0; i < lenght_ + 1; i++)
                 {
                     SetCursorPos(snake_[i]);
-                    std::cout << output("  ", 0, 0, 46 );
+                    std::cout << ColoredOut("  ", 0, 0, bgColor_ );
                 }
                 std::cout.flush();
                 usleep(100000);
@@ -175,7 +170,7 @@ void Snake::Collision(bool &b)
 
             }
             SetCursorPos(food_);
-            std::cout << output("  ", 0, 0, 46 );
+            std::cout << ColoredOut("  ", 0, 0, bgColor_ );
 
 
         }
@@ -198,17 +193,17 @@ void Snake::ShowScore()
     SetCursorPos(0,0);
     for(int j = min_.x_; j < max_.x_ + 2; j++)
     {
-       std::cout << output(" ", 0, 0, 44);
+       std::cout << ColoredOut(" ", 0, 0, panelColor_);
     }
     SetCursorPos(16,0);
-    std::cout << output("Score: ", 0, 0, 44)
-              << output(std::to_string(score_), 0, 0, 44);
+    std::cout << ColoredOut("Score: ", 0, 0, panelColor_)
+              << ColoredOut(std::to_string(score_), 0, 0, panelColor_);
 
 }
 void Snake::Pause()
 {
     SetCursorPos(33, 0);
-    std::cout << output("Paused", 0, 0, 44);
+    std::cout << ColoredOut("Paused", 0, 0, panelColor_);
 
 }
 
@@ -265,16 +260,16 @@ void Snake::Move()
 void Snake::Show_Snake()
 {
     SetCursorPos(food_);
-    std::cout << output("  ", 0, 0, 41);
+    std::cout << ColoredOut("  ", 0, 0, foodColor_);
 
     SetCursorPos(snake_[lenght_]);
-    std::cout << output("  ", 0, 0, 46 );
+    std::cout << ColoredOut("  ", 0, 0, bgColor_ );
 
     SetCursorPos(snake_[head + 1]);
-    std::cout << output("  ", 0, 0, 47);
+    std::cout << ColoredOut("  ", 0, 0, snakeColor_);
 
     SetCursorPos(snake_[head]);
-    std::cout << output("  ", 0, 0, 40);
+    std::cout << ColoredOut("  ", 0, 0, headColor_);
 
 
     std::cout.flush();
