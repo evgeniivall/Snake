@@ -3,33 +3,72 @@
 #include <termios.h>
 #include <unistd.h>
 #include <thread>
-void func(Snake &s, direction &current)
+
+
+#define UP      'A'
+#define DOWN    'B'
+#define RIGHT   'C'
+#define LEFT    'D'
+#define ENTER   '\n'
+
+#define ESC 27
+
+
+void Game(Snake &s, direction &current, bool &game)
 {
     s.Borders_Draw();
-    while(true)
+    while(!game)
     {
-        s.ShowScore();
-        s.Set_Direction(current);
-        s.collision();
-        s.Eat();
-        s.Show_Snake();
+        if(current != enter)
+        {
+            s.Set_Direction(current);
+            s.ShowScore();
+            s.Move();
+            s.Show_Snake();
+            s.Eat();
+            s.Collision(game);
+        }
+        else
+        {
+            s.Pause();
+        }
     }
+
 }
 
-void Control(direction &current)
+void Control(direction &current, bool &game)
 {
+    bool pause = false;
+    int key;
     struct termios oldt,
             newt;
-    while(true)
-    {
-        tcgetattr( STDIN_FILENO, &oldt );
-        newt = oldt;
-        newt.c_lflag &= ~( ICANON | ECHO );
-        tcsetattr( STDIN_FILENO, TCSANOW, &newt );
-        int key = getchar();
-        tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+    tcgetattr( STDIN_FILENO, &oldt );
+    newt = oldt;
+    newt.c_lflag &= ~( ICANON | ECHO );
+    tcsetattr( STDIN_FILENO, TCSANOW, &newt );
+    direction previous;
 
-        if (key == 27)
+    while(!game)
+    {
+        if(!pause)
+        {
+            previous = current;
+            key = getchar();
+        }
+
+
+        if((char)key == ENTER)
+        {
+            pause = true;
+            current = enter;
+            std::cout.flush();
+            key = getchar();
+            continue;
+        }
+
+
+
+        if (key == ESC)
         {
             key = getchar();
             if (key == '[')
@@ -37,47 +76,92 @@ void Control(direction &current)
                 key = getchar();
                 switch (key)
                 {
-                    case 'B':
+                    case UP:
                     {
-                        if(!(current == down))
+                        if(!(previous == down))
+                        {
                             current = up;
+                            pause = false;
+                        }
+                        else
+                        {
+                            key = ESC;
+                        }
                         break;
                     }
-                    case 'A':
+                    case DOWN:
                     {
-                        if(!(current == up))
+                        if(!(previous == up))
+                        {
                             current = down;
+                            pause = false;
+                        }
+                        else
+                        {
+                            key = ESC;
+                        }
                         break;
                     }
-                    case 'D':
+                    case LEFT:
                     {
-                        if(!(current == right))
-                            current = left;
+                        if(!(previous == right))
+                        {
+                           current = left;
+                           pause = false;
+                        }
+                        else
+                        {
+                            key = ESC;
+                        }
                         break;
                     }
-                    case 'C':
+                    case RIGHT:
                     {
-                        if(!(current == left))
-                            current = right;
+                        if(!(previous == left))
+                        {
+                           current = right;
+                           pause = false;
+                        }
+                        else
+                        {
+                            key = ESC;
+                        }
                         break;
                     }
-
                 }
             }
         }
+        std::cout.flush();
+        usleep(100000);
+
     }
-    usleep(500);
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
 }
+
+void StartGame(bool &gameEnd)
+{
+    Snake a;
+
+    direction start = direction::right;
+    std::thread gameThread(Game,std::ref(a), std::ref(start), std::ref(gameEnd));
+    std::thread controlThread(Control, std::ref(start), std::ref(gameEnd));
+    gameThread.join();
+    controlThread.join();
+    std::cout.flush();
+}
+
+
 
 int main()
 {
     system("setterm -cursor off");
-    Snake a;
-    direction start = direction::right;
-    std::thread game(func,std::ref(a), std::ref(start));
-    std::thread arrows(Control, std::ref(start));
-    game.join();
-    arrows.join();
+    bool gameEnd = false;
+    while(!gameEnd)
+    {
+        StartGame(gameEnd);
+        gameEnd = true; //Menu function
+    }
+    std::cout << "End";
 
     return 0;
 }

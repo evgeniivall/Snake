@@ -4,6 +4,10 @@
 #include <math.h>
 #include <time.h>
 
+#define head 0
+
+
+
 void Snake::Set_Direction(direction d)
 {
     currentDirection_ = d;
@@ -36,55 +40,88 @@ std::string output(std::string text, int type, int color, int bg)
     return str;
 }
 
-void SetCursorPos(int XPos, int YPos)
+
+void Snake::SetCursorPos(Point_ p)
 {
-    printf("\033[%d;%dH", YPos+1, XPos+1);
+    std::cout.flush();
+    printf("\033[%d;%dH", p.y_ + 1, p.x_ + 1);
+}
+void Snake::SetCursorPos(int XPos, int YPos)
+{
+    std::cout.flush();
+    printf("\033[%d;%dH", YPos + 1, XPos + 1);
 }
 
-Snake::Snake()
+Snake::Snake() : max_({38, 19}), min_({0, 1})
 {
-    for(int i = 0; i < 40; i++)
-        x_[i] = 0;
-    for(int i = 0; i < 40; i++)
-        y_[i] = 0;
-    x_[0] = 2;
-    y_[0] = 1;
-    xMax_ = 40;
-    yMax_ = 20;
-    xMin_ = 2;
-    yMin_ = 2;
+    //max_ = {38, 19};
+    //max_.x_ = 38;
+    //max_.y_ = 19;
+    //min_ = {0, 1};
+    //min_.x_ = 0;
+    //min_.y_ = 1;
+
     lenght_ = 2;
     score_ = 0;
     currentDirection_ = right;
-    GenerateFood();
-}
+    loos_ = false;
 
-void Snake::positionSwap()
-{
-    for(int i = lenght_ + 1; i > 0; i--)
+    snake_ = new Point_[lenght_ + 1];
+    for(unsigned i = 0; i < lenght_ + 1; i++)
     {
-        x_[i] = x_[i-1];
-        y_[i] = y_[i-1];
-
+        //snake_[i] = {0, 0};
+        snake_[i].x_ = 0;
+        snake_[i].y_ = 0;
     }
+    srand(time(0));
+    do
+    {
+        snake_[head].x_= rand() % max_.x_ + 2;
+        snake_[head].y_= rand() % max_.y_ + 1;
+    }
+    while(snake_[head].x_ % 2);
+
+    GenerateFood();
+
 }
+
+
+Snake::~Snake()
+{
+    delete [] snake_;
+}
+
+void Snake::Resize()
+{
+    Point_ *temp = new Point_[lenght_ + 1];
+
+    for(unsigned i = 0; i < lenght_; i++)
+    {
+        temp[i] = snake_[i];
+    }
+
+    delete []snake_;
+    snake_ = temp;
+
+}
+
+
+
 void Snake::Borders_Draw()
 {
     SetCursorPos(0,0);
-    for(int i = xMin_-2; i < xMax_+ 4; i++)
-        std::cout << output(" ", 0, 0, 47);
-    SetCursorPos(xMin_-2,yMax_+1);
-    for(int i = xMin_-2; i < xMax_ + 4; i++)
-        std::cout << output(" ", 0, 0, 47);
-    for(int i = yMin_-1; i < yMax_+1; i++)
+    for(int j = min_.x_; j < max_.x_ + 2; j++)
     {
-        SetCursorPos(xMin_-2, i);
-        std::cout << output("  ", 0, 0, 47);
+       std::cout << output(" ", 0, 0, 44);
     }
-    for(int i = yMin_-1; i < yMax_+1; i++)
+    std::cout << std::endl;
+    for(int i = min_.y_; i < max_.y_+ 1; i++)
     {
-        SetCursorPos(xMax_+ 2, i);
-        std::cout << output("  ", 0, 0, 47);
+        for(int j = min_.x_; j < max_.x_ + 2; j++)
+        {
+            std::cout << output(" ", 0, 0, 46 );
+        }
+       std::cout << std::endl;
     }
 
 
@@ -92,12 +129,12 @@ void Snake::Borders_Draw()
 
 void Snake::GenerateFood()
 {
-     foodX_ = 1 + rand() % xMax_;
-     foodY_ = 1 + rand() % yMax_;
+     food_.x_ = rand() % max_.x_ + 2;
+     food_.y_ = rand() % max_.y_ + 1;
 
-     for(int i = 0; i < lenght_; i++)
+     for(unsigned i = 0; i < lenght_ + 1; i++)
      {
-         if(((x_[i] == foodX_) && (y_[i] == foodY_)) || (foodX_ % 2 != 0))
+         if((food_ == snake_[i]) || (food_.x_ % 2 != 0))
          {
              GenerateFood();
              break;
@@ -106,13 +143,33 @@ void Snake::GenerateFood()
 
 }
 
-void Snake::collision()
+void Snake::Collision(bool &b)
 {
-    for(int i = 1; i < lenght_; i++)
+    for(unsigned i = 1; i < lenght_; i++)
     {
-        if((x_[i] == x_[0]) && (y_[i] == y_[0]))
+        if(snake_[i] == snake_[head])
         {
-            sleep(3);
+            b = true;
+            for(int t = 0; t < 5; t++)
+            {
+                for(unsigned i = 0; i < lenght_ + 1; i++)
+                {
+                    SetCursorPos(snake_[i]);
+                    std::cout << output("  ", 0, 0, 46 );
+                }
+                std::cout.flush();
+                usleep(100000);
+
+                for(unsigned i = 1; i < lenght_ + 1; i++)
+                {
+                    SetCursorPos(snake_[i]);
+                    std::cout << output("  ", 0, 0, 47 );
+                }
+                SetCursorPos(snake_[head + 1]);
+                std::cout << output("  ", 0, 0, 40 );
+                std::cout.flush();
+                usleep(100000);
+            }
 
         }
     }
@@ -120,9 +177,10 @@ void Snake::collision()
 
 void Snake::Eat()
 {
-    if((x_[0] == foodX_) && (y_[0] == foodY_))
+    if(snake_[head] == food_)
     {
         lenght_++;
+        Resize();
         score_++;
         GenerateFood();
     }
@@ -130,60 +188,89 @@ void Snake::Eat()
 
 void Snake::ShowScore()
 {
-    SetCursorPos(xMax_+5, 1);
-    std::cout << "Score: " << score_;
+    SetCursorPos(0,0);
+    for(int j = min_.x_; j < max_.x_ + 2; j++)
+    {
+       std::cout << output(" ", 0, 0, 44);
+    }
+    SetCursorPos(16,0);
+    std::cout << output("Score: ", 0, 0, 44)
+              << output(std::to_string(score_), 0, 0, 44);
+
+}
+void Snake::Pause()
+{
+    SetCursorPos(33, 0);
+    std::cout << output("Paused", 0, 0, 44);
+
+}
+
+void Snake::positionSwap()
+{
+    for(int i = lenght_; i > 0; i--)
+    {
+        snake_[i].x_ = snake_[i-1].x_;
+        snake_[i].y_ = snake_[i-1].y_;
+    }
+}
+
+void Snake::Move()
+{
+    positionSwap();
+    switch (currentDirection_)
+    {
+        case right:
+        {
+            if(snake_[head].x_ < max_.x_)
+                snake_[head].x_ = snake_[head + 1].x_ + 2;
+            else
+                snake_[head].x_ = min_.x_;
+            break;
+        }
+        case left:
+        {
+            if(snake_[head].x_ > min_.x_)
+                snake_[head].x_ = snake_[head + 1].x_ - 2;
+            else
+                snake_[head].x_ = max_.x_;
+            break;
+        }
+        case down:
+        {
+            if(snake_[head].y_ < max_.y_)
+                snake_[head].y_ = snake_[head + 1].y_ + 1;
+            else
+                snake_[head].y_ = min_.y_;
+            break;
+        }
+        case up:
+        {
+            if(snake_[head].y_ > min_.y_)
+                snake_[head].y_ = snake_[head + 1].y_ - 1;
+            else
+                snake_[head].y_ = max_.y_;
+            break;
+        }
+
+    }
 }
 
 void Snake::Show_Snake()
 {
-    SetCursorPos(foodX_, foodY_);
-    std::cout << output("  ", 0, 0, 44);
+    SetCursorPos(food_);
+    std::cout << output("  ", 0, 0, 41);
 
-    SetCursorPos(x_[lenght_], y_[lenght_]);
-    std::cout << "  ";
-    SetCursorPos(x_[1], y_[1]);
+    SetCursorPos(snake_[lenght_]);
+    std::cout << output("  ", 0, 0, 46 );
+
+    SetCursorPos(snake_[head + 1]);
     std::cout << output("  ", 0, 0, 47);
-    SetCursorPos(x_[0], y_[0]);
+
+    SetCursorPos(snake_[head]);
     std::cout << output("  ", 0, 0, 40);
 
-    positionSwap();
-    switch (currentDirection_)
-    {
-    case right:
-    {
-        if(x_[0] < xMax_)
-            x_[0] = x_[1]+2;
-        else
-            x_[0] = xMin_;
-        break;
-    }
-    case left:
-    {
-        if(x_[0] > xMin_)
-            x_[0] = x_[1]-2;
-        else
-            x_[0] = xMax_;
-        break;
-    }
-    case up:
-    {
-        if(y_[0] < yMax_)
-            y_[0] = y_[1]+1;
-        else
-            y_[0] = yMin_-1;
-        break;
-    }
-    case down:
-    {
-        if(y_[0] > yMin_-1)
-            y_[0] = y_[1]-1;
-        else
-            y_[0] = yMax_;
-        break;
-    }
 
-    }
     std::cout.flush();
-    usleep(110000);
+    usleep(100000);
 
 }
