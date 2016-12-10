@@ -8,6 +8,7 @@
 
 #ifdef _WIN32
 #include <conio.h>
+#include "windows.h"
 #define cls() system("cls")
 #endif
 

@@ -40,19 +40,19 @@ void GUI::Display()
 {
     if(enter_)
         return;
-    SetCursorPos(13, 5);
+    Set_Cursor_Pos(13, 5);
     std::cout  << ColoredOut(Header_, 1,white, light_blue) << std::endl << std::endl;
 
     for (int i = 0; i < optionsAmount_; i++)
     {
         if(i == position_)
         {
-            SetCursorPos(12, (7 + i));
+            Set_Cursor_Pos(12, (7 + i));
             std::cout  << ColoredOut(strArray_[i], 0, textColor_, bgColor_);
         }
         else
         {
-            SetCursorPos(12, (7 + i));
+            Set_Cursor_Pos(12, (7 + i));
             std::cout  << ColoredOut(strArray_[i], 0, 0, light_blue);
         }
         std::cout << std::endl;

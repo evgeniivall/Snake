@@ -1,13 +1,13 @@
 #ifndef SNAKE_H
 #define SNAKE_H
 
-#include <unistd.h>
-#include <iostream>
 #include <math.h>
-#include <thread>
 #include <time.h>
+#include <thread>
 
-
+#ifdef WIN32_
+#define usleep(x) Sleep((x)/1000)
+#endif
 
 enum direction {right, left, up, down, enter};
 
@@ -57,7 +57,7 @@ public:
     void Move();
     void Pause();
 
-    friend void SetCursorPos(Point_ p);
+    friend void Set_Cursor_Pos(Point_ p);
 
     void Resize();
     ~Snake();
@@ -66,8 +66,8 @@ public:
 
 
 
-void SetCursorPos(int XPos, int YPos);
-void SetCursorPos(Snake::Point_ p);
+void Set_Cursor_Pos(int XPos, int YPos);
+void Set_Cursor_Pos(Snake::Point_ p);
 
 #endif // SNAKE_H
 

@@ -1,9 +1,14 @@
 #include "snake.h"
-
 #include "gui.h"
 
 
+#ifdef __unix__
+#define CURSOR_HIDE system("setterm -cursor off")
+#endif
 
+#ifdef WIN32_
+#define CURSOR_HIDE ShowConsoleCursor(false)
+#endif
 
 void Game(Snake &s, direction &current, bool &game)
 {
@@ -12,17 +17,15 @@ void Game(Snake &s, direction &current, bool &game)
     {
         if(current != enter)
         {
+            s.ShowScore();
             s.Set_Direction(current);
             s.Move();
             s.Collision(game);
-            s.ShowScore();
             if(!game)
             {
-                s.Show_Snake();
-            s.Eat();
+				s.Show_Snake();
+				s.Eat();
             }
-
-
         }
         else
         {
@@ -31,6 +34,7 @@ void Game(Snake &s, direction &current, bool &game)
     }
 
 }
+
 #ifdef __unix__
 
 #define UP      'A'
@@ -40,7 +44,7 @@ void Game(Snake &s, direction &current, bool &game)
 #define ENTER   '\n'
 #define ESC      27
 
-void Control(direction &current, bool &game)
+void Control(direction &current, bool &game_end)
 {
     bool pause = false;
     int key;
@@ -52,18 +56,18 @@ void Control(direction &current, bool &game)
     tcsetattr( STDIN_FILENO, TCSANOW, &newt );
     direction previous;
 
-    while(!game)
+    while(!game_end)
     {
         if(!pause)
         {
             previous = current;
             key = getchar();
         }
-        //if(game)
-        //{
-        //    tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
-        //    return;
-        //}
+        if(game_end)
+        {
+            tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+            return;
+        }
 
         if((char)key == ENTER)
         {
@@ -76,21 +80,10 @@ void Control(direction &current, bool &game)
 
         if (key == ESC)
         {
-
-            //if(game)
-            //{
-            //    tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
-            //    return;
-            //}
             key = getchar();
 
             if (key == '[')
             {
-          //      if(game)
-            //    {
-              //      tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
-                //    return;
-                //}
                 key = getchar();
                 switch (key)
                 {
@@ -165,16 +158,17 @@ void Control(direction &current, bool &game)
 #define LEFT    75
 #define ENTER   13
 
-void Control(direction &current, bool &game)
+void Control(direction &current, bool &game_end)
 {
-    bool pause = false;
+	direction previous;
+	bool pause = false;
     int key;
-    while(!game)
+    while(!game_end)
     {
+		key = _getch();
         if(!pause)
         {
             previous = current;
-            key = getchar();
         }
             switch (key)
             {
@@ -182,8 +176,8 @@ void Control(direction &current, bool &game)
                 {
                     pause = true;
                     current = enter;
-                    key = getchar();
-                    continue;
+                    
+                    break;
                 }
                 case UP:
                 {
@@ -229,10 +223,9 @@ void Control(direction &current, bool &game)
 #endif
 void StartGame(bool &gameEnd)
 {
-    Snake a;
-
+    Snake obj;
     direction start = direction::right;
-    std::thread gameThread(Game,std::ref(a), std::ref(start), std::ref(gameEnd));
+    std::thread gameThread(Game,std::ref(obj), std::ref(start), std::ref(gameEnd));
     std::thread controlThread(Control, std::ref(start), std::ref(gameEnd));
     gameThread.join();
     controlThread.join();
@@ -243,20 +236,32 @@ void StartGame(bool &gameEnd)
 bool Menu()
 {
     std::string options[2] = {"   New Game   ", "     Exit     "};
-    GUI G(2, options, "You are lose!",bg_emphasizing, red);
-    return G.Show();
+    GUI menu(2, options, "GAME OVER",bg_emphasizing, red);
+    return menu.Show();
 }
 
+#ifdef _WIN32
+void ShowConsoleCursor(bool showFlag)
+{
+	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	CONSOLE_CURSOR_INFO     cursorInfo;
+
+	GetConsoleCursorInfo(out, &cursorInfo);
+	cursorInfo.bVisible = showFlag; // set the cursor visibility
+	SetConsoleCursorInfo(out, &cursorInfo);
+}
+#endif
 int main()
 {
-    system("setterm -cursor off");
+    cls();
+    CURSOR_HIDE;
     bool gameEnd = false;
     while(!gameEnd)
     {
         StartGame(gameEnd);
         gameEnd = Menu(); //Menu function
     }
-    std::cout << "End";
 
     return 0;
 }

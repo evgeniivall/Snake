@@ -3,17 +3,36 @@
 
 #define head 0
 
-void SetCursorPos(Snake::Point_ p)
+#ifdef __unix__
+
+void Set_Cursor_Pos(Snake::Point_ p)
 {
     std::cout.flush();
     printf("\033[%d;%dH", p.y_ + 1, p.x_ + 1);
 }
-void SetCursorPos(int XPos, int YPos)
+
+void Set_Cursor_Pos(int XPos, int YPos)
 {
     std::cout.flush();
     printf("\033[%d;%dH", YPos + 1, XPos + 1);
 }
+#endif // __unix__
 
+#ifdef _WIN32
+
+void Set_Cursor_Pos(Snake::Point_ point)
+{
+	COORD p = { (point.x_), (point.y_) };
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
+}
+
+void Set_Cursor_Pos(int XPos, int YPos)
+{
+	COORD p = { XPos, YPos };
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
+}
+
+#endif // _WIN32
 
 void Snake::Set_Direction(direction d)
 {
@@ -48,11 +67,9 @@ std::string ColoredOut(std::string text, int type, int color, int bg)
     return str;
 }
 
-
-
 Snake::Snake() : max_({38, 19}), min_({0, 1})
 {
-    lenght_ = 18;
+    lenght_ = 2;
     score_ = 0;
     currentDirection_ = right;
     loos_ = false;
@@ -104,13 +121,13 @@ void Snake::Resize()
 
 void Snake::Borders_Draw()
 {
-    SetCursorPos(0,0);
-    //
+    Set_Cursor_Pos(0,0);
+
     for(int j = min_.x_; j < max_.x_ + 2; j++)
     {
        std::cout << ColoredOut(" ", 0, 0, panelColor_);
     }
-    //
+
     std::cout << std::endl;
     for(int i = min_.y_; i < max_.y_+ 1; i++)
     {
@@ -151,17 +168,17 @@ void Snake::Collision(bool &b)
             {
                 for(unsigned i = 1; i < lenght_ + 1; i++)
                 {
-                    SetCursorPos(snake_[i]);
+                    Set_Cursor_Pos(snake_[i]);
                     std::cout << ColoredOut("  ", 0, 0, snakeColor_ );
                 }
-                SetCursorPos(snake_[head + 1]);
+                Set_Cursor_Pos(snake_[head + 1]);
                 std::cout << ColoredOut("  ", 0, 0, headColor_ );
                 std::cout.flush();
                 usleep(100000);
 
                 for(unsigned i = 0; i < lenght_ + 1; i++)
                 {
-                    SetCursorPos(snake_[i]);
+                    Set_Cursor_Pos(snake_[i]);
                     std::cout << ColoredOut("  ", 0, 0, bgColor_ );
                 }
                 std::cout.flush();
@@ -169,7 +186,7 @@ void Snake::Collision(bool &b)
 
 
             }
-            SetCursorPos(food_);
+            Set_Cursor_Pos(food_);
             std::cout << ColoredOut("  ", 0, 0, bgColor_ );
 
 
@@ -190,19 +207,19 @@ void Snake::Eat()
 
 void Snake::ShowScore()
 {
-    SetCursorPos(0,0);
+    Set_Cursor_Pos(-1,0);
     for(int j = min_.x_; j < max_.x_ + 2; j++)
     {
        std::cout << ColoredOut(" ", 0, 0, panelColor_);
     }
-    SetCursorPos(16,0);
+    Set_Cursor_Pos(16,0);
     std::cout << ColoredOut("Score: ", 0, 0, panelColor_)
               << ColoredOut(std::to_string(score_), 0, 0, panelColor_);
 
 }
 void Snake::Pause()
 {
-    SetCursorPos(33, 0);
+    Set_Cursor_Pos(33, 0);
     std::cout << ColoredOut("Paused", 0, 0, panelColor_);
 
 }
@@ -253,22 +270,23 @@ void Snake::Move()
                 snake_[head].y_ = max_.y_;
             break;
         }
+        case enter: break;
 
     }
 }
 
 void Snake::Show_Snake()
 {
-    SetCursorPos(food_);
+    Set_Cursor_Pos(food_);
     std::cout << ColoredOut("  ", 0, 0, foodColor_);
 
-    SetCursorPos(snake_[lenght_]);
+    Set_Cursor_Pos(snake_[lenght_]);
     std::cout << ColoredOut("  ", 0, 0, bgColor_ );
 
-    SetCursorPos(snake_[head + 1]);
+    Set_Cursor_Pos(snake_[head + 1]);
     std::cout << ColoredOut("  ", 0, 0, snakeColor_);
 
-    SetCursorPos(snake_[head]);
+    Set_Cursor_Pos(snake_[head]);
     std::cout << ColoredOut("  ", 0, 0, headColor_);
 
 
