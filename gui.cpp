@@ -1,6 +1,37 @@
 #include "gui.h"
 #include "snake.h"
 
+#ifdef __unix__
+
+void Set_Cursor_Pos(Snake::Point_ p)
+{
+    std::cout.flush();
+    printf("\033[%d;%dH", p.y_ + 1, p.x_ + 1);
+}
+
+void Set_Cursor_Pos(int XPos, int YPos)
+{
+    std::cout.flush();
+    printf("\033[%d;%dH", YPos + 1, XPos + 1);
+}
+#endif // __unix__
+
+#ifdef _WIN32
+
+void Set_Cursor_Pos(Snake::Point_ point)
+{
+    COORD p = { (point.x_), (point.y_) };
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
+}
+
+void Set_Cursor_Pos(int XPos, int YPos)
+{
+    COORD p = { XPos, YPos };
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
+}
+
+#endif // _WIN32
+
 GUI::GUI(int size, std::string* names, std::string head, emphasizing_mode mode, color emp_color)
 {
     optionsAmount_ = size;
@@ -41,7 +72,7 @@ void GUI::Display()
     if(enter_)
         return;
     Set_Cursor_Pos(13, 5);
-    std::cout  << ColoredOut(Header_, 1,white, light_blue) << std::endl << std::endl;
+    std::cout  << ColoredOut(Header_, 1,WHITE_COLOR, LIGHT_BLUE_COLOR) << std::endl << std::endl;
 
     for (int i = 0; i < optionsAmount_; i++)
     {
@@ -53,7 +84,7 @@ void GUI::Display()
         else
         {
             Set_Cursor_Pos(12, (7 + i));
-            std::cout  << ColoredOut(strArray_[i], 0, 0, light_blue);
+            std::cout  << ColoredOut(strArray_[i], 0, 0, LIGHT_BLUE_COLOR);
         }
         std::cout << std::endl;
     }

@@ -9,13 +9,33 @@
 #define usleep(x) Sleep((x)/1000)
 #endif
 
-enum direction {right, left, up, down, enter};
+enum direction {RIGHT, LEFT, UP, DOWN, PAUSE};
+
 
 class Snake
 {
+    struct Point_;
+public:
+    Snake();
+    void Show_Snake();
+    void Set_Direction(direction d);
+    void Eat();
+    void GenerateFood();
+    void Borders_Draw();
+    void Collision(bool &b);
+    void ShowScore();
+    void Game_End();
+    void showFood();
+    void Move();
+    void Pause();
 
+    friend void Set_Cursor_Pos(Point_ p);
 
+    void Resize();
+    ~Snake();
 private:
+    void positionSwap();
+
     struct Point_
     {
         int x_;
@@ -42,32 +62,8 @@ private:
     unsigned lenght_;
     direction currentDirection_;
     int score_;
-public:
-    Snake();
-    void Show_Snake();
-    void Set_Direction(direction d);
-    void positionSwap();
-    void Eat();
-    void GenerateFood();
-    void Borders_Draw();
-    void Collision(bool &b);
-    void ShowScore();
-    void Game_End();
-    void showFood();
-    void Move();
-    void Pause();
-
-    friend void Set_Cursor_Pos(Point_ p);
-
-    void Resize();
-    ~Snake();
-    bool loos_;
 };
 
-
-
-void Set_Cursor_Pos(int XPos, int YPos);
-void Set_Cursor_Pos(Snake::Point_ p);
 
 #endif // SNAKE_H
 

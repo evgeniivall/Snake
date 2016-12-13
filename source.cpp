@@ -15,7 +15,7 @@ void Game(Snake &s, direction &current, bool &game)
     s.Borders_Draw();
     while(!game)
     {
-        if(current != enter)
+        if(current != PAUSE)
         {
             s.ShowScore();
             s.Set_Direction(current);
@@ -37,12 +37,12 @@ void Game(Snake &s, direction &current, bool &game)
 
 #ifdef __unix__
 
-#define UP      'A'
-#define DOWN    'B'
-#define RIGHT   'C'
-#define LEFT    'D'
-#define ENTER   '\n'
-#define ESC      27
+#define UP_ARROW        'A'
+#define DOWN_ARROW      'B'
+#define RIGHT_ARROW     'C'
+#define LEFT_ARROW      'D'
+#define ENTER_KEY       '\n'
+#define ESC             27
 
 void Control(direction &current, bool &game_end)
 {
@@ -69,10 +69,10 @@ void Control(direction &current, bool &game_end)
             return;
         }
 
-        if((char)key == ENTER)
+        if((char)key == ENTER_KEY)
         {
             pause = true;
-            current = enter;
+            current = PAUSE;
             std::cout.flush();
             key = getchar();
             continue;
@@ -87,11 +87,11 @@ void Control(direction &current, bool &game_end)
                 key = getchar();
                 switch (key)
                 {
-                    case UP:
+                    case UP_ARROW:
                     {
-                        if(!(previous == down))
+                        if(!(previous == DOWN))
                         {
-                            current = up;
+                            current = UP;
                             pause = false;
                         }
                         else
@@ -100,11 +100,11 @@ void Control(direction &current, bool &game_end)
                         }
                         break;
                     }
-                    case DOWN:
+                    case DOWN_ARROW:
                     {
-                        if(!(previous == up))
+                        if(!(previous == UP))
                         {
-                            current = down;
+                            current = DOWN;
                             pause = false;
                         }
                         else
@@ -113,11 +113,11 @@ void Control(direction &current, bool &game_end)
                         }
                         break;
                     }
-                    case LEFT:
+                    case LEFT_ARROW:
                     {
-                        if(!(previous == right))
+                        if(!(previous == RIGHT))
                         {
-                           current = left;
+                           current = LEFT;
                            pause = false;
                         }
                         else
@@ -126,11 +126,11 @@ void Control(direction &current, bool &game_end)
                         }
                         break;
                     }
-                    case RIGHT:
+                    case RIGHT_ARROW:
                     {
-                        if(!(previous == left))
+                        if(!(previous == LEFT))
                         {
-                           current = right;
+                           current = RIGHT;
                            pause = false;
                         }
                         else
@@ -152,11 +152,11 @@ void Control(direction &current, bool &game_end)
 
 #ifdef _WIN32
 
-#define UP      72
-#define DOWN    80
-#define RIGHT   77
-#define LEFT    75
-#define ENTER   13
+#define UP_ARROW      72
+#define DOWN_ARROW    80
+#define RIGHT_ARROW   77
+#define LEFT_ARROW    75
+#define ENTER_KEY     13
 
 void Control(direction &current, bool &game_end)
 {
@@ -172,45 +172,45 @@ void Control(direction &current, bool &game_end)
         }
             switch (key)
             {
-                case ENTER:
+                case ENTER_KEY:
                 {
                     pause = true;
-                    current = enter;
+                    current = PAUSE;
                     
                     break;
                 }
-                case UP:
+                case UP_ARROW:
                 {
-                    if(!(previous == down))
+                    if(!(previous == DOWN))
                     {
-                        current = up;
+                        current = UP;
                         pause = false;
                     }
                     break;
                 }
-                case DOWN:
+                case DOWN_ARROW:
                 {
-                    if(!(previous == up))
+                    if(!(previous == UP))
                     {
-                        current = down;
+                        current = DOWN;
                         pause = false;
                     }
                     break;
                 }
-                case LEFT:
+                case LEFT_ARROW:
                 {
-                    if(!(previous == right))
+                    if(!(previous == RIGHT))
                     {
-                        current = left;
+                        current = LEFT;
                         pause = false;
                     }
                     break;
                 }
-                case RIGHT:
+                case RIGHT_ARROW:
                 {
-                    if(!(previous == left))
+                    if(!(previous == LEFT))
                     {
-                        current = right;
+                        current = RIGHT;
                         pause = false;
                     }
                     break;
@@ -224,7 +224,7 @@ void Control(direction &current, bool &game_end)
 void StartGame(bool &gameEnd)
 {
     Snake obj;
-    direction start = direction::right;
+    direction start = direction::RIGHT;
     std::thread gameThread(Game,std::ref(obj), std::ref(start), std::ref(gameEnd));
     std::thread controlThread(Control, std::ref(start), std::ref(gameEnd));
     gameThread.join();
@@ -236,7 +236,7 @@ void StartGame(bool &gameEnd)
 bool Menu()
 {
     std::string options[2] = {"   New Game   ", "     Exit     "};
-    GUI menu(2, options, "GAME OVER",bg_emphasizing, red);
+    GUI menu(2, options, "GAME OVER",bg_emphasizing, RED_COLOR);
     return menu.Show();
 }
 

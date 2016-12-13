@@ -2,7 +2,7 @@
 #define GUI_H
 
 
-
+#include "snake.h"
 #include <iostream>
 #define TAB "\t"
 
@@ -19,17 +19,19 @@
 #endif
 
 std::string ColoredOut(std::string text, int type, int color, int bg);
+void Set_Cursor_Pos(int XPos, int YPos);
+void Set_Cursor_Pos(Snake::Point_ p);
 
 enum color
 {
-    black       = 30,
-    red         = 31,
-    green       = 32,
-    yellow      = 33,
-    blue        = 34,
-    purple      = 35,
-    light_blue  = 36,
-    white       = 37
+    BLACK_COLOR       = 30,
+    RED_COLOR         = 31,
+    GREEN_COLOR       = 32,
+    YELLOW_COLOR      = 33,
+    BLUE_COLOR        = 34,
+    PURPLE_COLOR      = 35,
+    LIGHT_BLUE_COLOR  = 36,
+    WHITE_COLOR       = 37
 };
 enum emphasizing_mode
 {
