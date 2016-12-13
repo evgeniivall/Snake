@@ -3,36 +3,6 @@
 
 #define head 0
 
-#ifdef __unix__
-
-void Set_Cursor_Pos(Snake::Point_ p)
-{
-    std::cout.flush();
-    printf("\033[%d;%dH", p.y_ + 1, p.x_ + 1);
-}
-
-void Set_Cursor_Pos(int XPos, int YPos)
-{
-    std::cout.flush();
-    printf("\033[%d;%dH", YPos + 1, XPos + 1);
-}
-#endif // __unix__
-
-#ifdef _WIN32
-
-void Set_Cursor_Pos(Snake::Point_ point)
-{
-	COORD p = { (point.x_), (point.y_) };
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
-}
-
-void Set_Cursor_Pos(int XPos, int YPos)
-{
-	COORD p = { XPos, YPos };
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
-}
-
-#endif // _WIN32
 
 void Snake::Set_Direction(direction d)
 {
@@ -71,8 +41,8 @@ Snake::Snake() : max_({38, 19}), min_({0, 1})
 {
     lenght_ = 2;
     score_ = 0;
-    currentDirection_ = right;
-    loos_ = false;
+    currentDirection_ = RIGHT;
+
 
     snake_ = new Point_[lenght_ + 1];
     for(unsigned i = 0; i < lenght_ + 1; i++)
@@ -87,11 +57,11 @@ Snake::Snake() : max_({38, 19}), min_({0, 1})
     }
     while(snake_[head].x_ % 2);
 
-    bgColor_    = light_blue;
-    snakeColor_ = white;
-    headColor_  = black;
-    panelColor_ = blue;
-    foodColor_  = red;
+    bgColor_    = LIGHT_BLUE_COLOR;
+    snakeColor_ = WHITE_COLOR;
+    headColor_  = BLACK_COLOR;
+    panelColor_ = BLUE_COLOR;
+    foodColor_  = RED_COLOR;
 
     GenerateFood();
 
@@ -238,7 +208,7 @@ void Snake::Move()
     positionSwap();
     switch (currentDirection_)
     {
-        case right:
+        case RIGHT:
         {
             if(snake_[head].x_ < max_.x_)
                 snake_[head].x_ = snake_[head + 1].x_ + 2;
@@ -246,7 +216,7 @@ void Snake::Move()
                 snake_[head].x_ = min_.x_;
             break;
         }
-        case left:
+        case LEFT:
         {
             if(snake_[head].x_ > min_.x_)
                 snake_[head].x_ = snake_[head + 1].x_ - 2;
@@ -254,7 +224,7 @@ void Snake::Move()
                 snake_[head].x_ = max_.x_;
             break;
         }
-        case down:
+        case DOWN:
         {
             if(snake_[head].y_ < max_.y_)
                 snake_[head].y_ = snake_[head + 1].y_ + 1;
@@ -262,7 +232,7 @@ void Snake::Move()
                 snake_[head].y_ = min_.y_;
             break;
         }
-        case up:
+        case UP:
         {
             if(snake_[head].y_ > min_.y_)
                 snake_[head].y_ = snake_[head + 1].y_ - 1;
@@ -270,7 +240,7 @@ void Snake::Move()
                 snake_[head].y_ = max_.y_;
             break;
         }
-        case enter: break;
+        case PAUSE: break;
 
     }
 }
