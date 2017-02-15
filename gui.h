@@ -4,6 +4,7 @@
 
 #include "snake.h"
 #include <iostream>
+#include <string>
 #define TAB "\t"
 
 #ifdef _WIN32
@@ -44,10 +45,7 @@ class GUI
 
 public:
     int Show();
-    GUI();
     GUI(int size, std::string* names, std::string head, emphasizing_mode mode, color emp_color);
-    //std::string ColoredOut(std::string text, int type, int color, int bg);
-
     ~GUI()
     {
         delete [] strArray_;

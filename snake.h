@@ -5,7 +5,7 @@
 #include <time.h>
 #include <thread>
 
-#ifdef WIN32_
+#ifdef _WIN32
 #define usleep(x) Sleep((x)/1000)
 #endif
 
@@ -24,8 +24,6 @@ public:
     void Borders_Draw();
     void Collision(bool &b);
     void ShowScore();
-    void Game_End();
-    void showFood();
     void Move();
     void Pause();
 
