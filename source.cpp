@@ -236,7 +236,7 @@ void StartGame(bool &gameEnd)
 bool Menu()
 {
     std::string options[2] = {"   New Game   ", "     Exit     "};
-    GUI menu(2, options, "GAME OVER",bg_emphasizing, RED_COLOR);
+    GUI menu(2, options, " GAME OVER",bg_emphasizing, RED_COLOR);
     return menu.Show();
 }
 

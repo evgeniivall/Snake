@@ -172,17 +172,20 @@ void Snake::Eat()
         Resize();
         score_++;
         GenerateFood();
+		ShowScore();
     }
 }
 
 void Snake::ShowScore()
 {
-    Set_Cursor_Pos(-1,0);
-    for(int j = min_.x_; j < max_.x_ + 2; j++)
-    {
-       std::cout << ColoredOut(" ", 0, 0, panelColor_);
-    }
-    Set_Cursor_Pos(16,0);
+
+	Set_Cursor_Pos(0,0);
+	for(int j = min_.x_; j < max_.x_ + 2; j++)
+	{
+	 std::cout << ColoredOut(" ", 0, 0, panelColor_);
+	}
+
+	Set_Cursor_Pos(16,0);
     std::cout << ColoredOut("Score: ", 0, 0, panelColor_)
               << ColoredOut(std::to_string(score_), 0, 0, panelColor_);
 
