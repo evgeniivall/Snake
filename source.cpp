@@ -4,10 +4,12 @@
 
 #ifdef __unix__
 #define CURSOR_HIDE system("setterm -cursor off")
+#define CURSOR_SHOW system("setterm -cursor on")
 #endif
 
 #ifdef WIN32_
 #define CURSOR_HIDE ShowConsoleCursor(false)
+#define CURSOR_SHOW ShowConsoleCursor(true) 
 #endif
 
 void Game(Snake &s, direction &current, bool &game)
@@ -262,6 +264,8 @@ int main()
         StartGame(gameEnd);
         gameEnd = Menu(); //Menu function
     }
+    CURSOR_SHOW;
+    cls();
 
     return 0;
 }
