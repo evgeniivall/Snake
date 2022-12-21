@@ -1,6 +1,10 @@
 #include "gui.h"
 #include "snake.h"
 
+#ifdef __APPLE__
+#define __unix__
+#endif
+
 #ifdef __unix__
 
 void Set_Cursor_Pos(Snake::Point_ p)

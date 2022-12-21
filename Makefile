@@ -1,6 +1,6 @@
 TARGET = snake
 CC = g++
-CCFLAGS = -Wall
+CCFLAGS = -std=c++11 -Wall
 LDFLAGS = -lpthread
 
 .PHONY: all clean install uninstall

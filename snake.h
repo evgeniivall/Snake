@@ -4,6 +4,7 @@
 #include <math.h>
 #include <time.h>
 #include <thread>
+#include <unistd.h>
 
 #ifdef _WIN32
 #define usleep(x) Sleep((x)/1000)

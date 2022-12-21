@@ -7,6 +7,10 @@
 #include <string>
 #define TAB "\t"
 
+#ifdef __APPLE__
+#define __unix__
+#endif
+
 #ifdef _WIN32
 #include <conio.h>
 #include "windows.h"
