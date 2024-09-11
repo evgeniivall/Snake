@@ -1,16 +1,15 @@
 #include "snake.h"
 #include "gui.h"
 
-#ifdef __APPLE__
-#define __unix__
-#endif
-
 #ifdef __unix__
 #define CURSOR_HIDE system("setterm -cursor off")
 #define CURSOR_SHOW system("setterm -cursor on")
 #endif
 
-
+#ifdef __APPLE__
+#define CURSOR_HIDE printf("\033[?25l")
+#define CURSOR_SHOW printf("\033[?25h")
+#endif
 
 #ifdef WIN32_
 #define CURSOR_HIDE ShowConsoleCursor(false)
